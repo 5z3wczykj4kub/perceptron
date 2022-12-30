@@ -1,0 +1,35 @@
+{
+  "name": "perceptron",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint --max-warnings=0 src"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^2.4.5",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "framer-motion": "^6",
+    "immer": "^9.0.16",
+    "lodash": "^4.17.21",
+    "plotly.js": "^2.17.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-plotly.js": "^2.6.0",
+    "use-immer": "^0.8.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.9",
+    "@types/react-plotly.js": "^2.5.2",
+    "@vitejs/plugin-react": "^3.0.0",
+    "eslint": "^8.30.0",
+    "eslint-config-react-app": "^7.0.1",
+    "typescript": "^4.9.3",
+    "vite": "^4.0.0"
+  }
+}
