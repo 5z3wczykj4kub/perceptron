@@ -108,12 +108,9 @@ const App = () => {
     }, 0)
   }, [points, f, setTable, setIsLearning])
 
-  const handleSort = () => {
-    console.log(
-      'isAbove',
-      points.filter((point) => isPointAbove(point, ref.current))
-    )
-  }
+  const [sortedPoints, setSortedPoints] = useImmer<
+    [TPoint, TPoint, 'above' | 'below'][]
+  >([[], []])
 
   return (
     <>
@@ -207,6 +204,8 @@ const App = () => {
       <Button
         size='sm'
         isLoading={isLearning}
+        loadingText='Learning'
+        spinnerPlacement='end'
         disabled={!!ref.current}
         onClick={handleLearn}
       >
@@ -237,9 +236,59 @@ const App = () => {
         </Table>
       </TableContainer>
       {ref.current && (
-        <Button size='sm' isLoading={isLearning} onClick={handleSort}>
-          Sort
-        </Button>
+        <>
+          <Plot
+            data={[
+              {
+                x: sortedPoints[0].map((point) => point[0]),
+                y: sortedPoints[0].map((point) => point[1]),
+                mode: 'markers',
+              },
+              {
+                x: sortedPoints[1].map((point) => point[0]),
+                y: sortedPoints[1].map((point) => point[1]),
+                mode: 'markers',
+              },
+              {
+                x: xs,
+                y: ys,
+                mode: 'lines',
+              },
+            ]}
+            layout={{ title: 'Perceptron' }}
+          />
+          <Heading as='h2' size='lg'>
+            Points: {sortedPoints.flat().length}
+          </Heading>
+          <Button
+            size='sm'
+            onClick={() =>
+              setSortedPoints(
+                (draft) =>
+                  void (draft[2] === 'above' ? draft[0].pop() : draft[1].pop())
+              )
+            }
+          >
+            -
+          </Button>
+          <Button
+            size='sm'
+            onClick={() =>
+              setSortedPoints((draft) => {
+                const point = getRandomPoint()
+                if (isPointAbove(point, ref.current)) {
+                  draft[0].push(point)
+                  draft[2] = 'above'
+                } else {
+                  draft[1].push(point)
+                  draft[2] = 'below'
+                }
+              })
+            }
+          >
+            +
+          </Button>
+        </>
       )}
     </>
   )
