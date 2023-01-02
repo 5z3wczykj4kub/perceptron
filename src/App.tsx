@@ -114,53 +114,78 @@ const App = () => {
 
   return (
     <>
-      <Stack justifyContent='center' alignItems='center' mt={8}>
+      <Stack justifyContent='center' alignItems='center' mt={12}>
         <Heading as='h2' size='lg' textAlign='center'>
-          Training set
+          Zbiór uczący "L"
         </Heading>
-        <Text fontSize='xl' textAlign='center'>
-          Generate random points. Adjust function parameters. Click button below
-          to start the training process.
+        <Text w='100%' maxW={1068} fontSize='xl' textAlign='justify'>
+          Wygeneruj zbiór uczący "L" losując dowolną ilość punktów. Modyfikuj
+          parametry liniowej funkcji{' '}
+          <Highlight
+            query='f(x)'
+            styles={{
+              p: 1,
+              borderRadius: '0.375rem',
+              bg: 'orange.400',
+            }}
+          >
+            f(x)
+          </Highlight>
+          .
+          <br />
+          Kliknij przycisk poniżej, by nauczyć perceptron rozróżniania punktów
+          znajdujących się powyżej lub poniżej funkcji{' '}
+          <Highlight
+            query='f(x)'
+            styles={{
+              p: 1,
+              borderRadius: '0.375rem',
+              bg: 'orange.400',
+            }}
+          >
+            f(x)
+          </Highlight>
+          .
         </Text>
         <HStack>
-          <Stack justify='space-between' h={270}>
+          <Stack rowGap={4} w={360} h={270}>
             <Stack spacing={4}>
-              <HStack justify='end'>
+              <HStack justify='space-between'>
                 <Heading as='h2' size='lg'>
                   <Highlight
-                    query={`Points: ${points.length}`}
+                    query={`Punkty: ${points.length}`}
                     styles={{
                       p: 1,
                       borderRadius: '0.375rem',
                       color: 'white',
-                      bg: 'blue.300',
+                      bg: 'blue.400',
                     }}
                   >
-                    {`Points: ${points.length}`}
+                    {`Punkty: ${points.length}`}
                   </Highlight>
                 </Heading>
-                <Button
-                  size='sm'
-                  onClick={() => {
-                    setSteps([])
-                    ref.current = null
-                    setPoints((draft) => void draft.pop())
-                  }}
-                >
-                  <MinusIcon />
-                </Button>
-                <Button
-                  size='sm'
-                  onClick={() => {
-                    setSteps([])
-                    ref.current = null
-                    setPoints(appendRandomPoint)
-                  }}
-                >
-                  <AddIcon />
-                </Button>
+                <HStack>
+                  <Button
+                    onClick={() => {
+                      setSteps([])
+                      ref.current = null
+                      setPoints((draft) => void draft.pop())
+                    }}
+                  >
+                    <MinusIcon />
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setSteps([])
+                      ref.current = null
+                      setPoints(appendRandomPoint)
+                    }}
+                  >
+                    <AddIcon />
+                  </Button>
+                </HStack>
               </HStack>
-              <HStack justify='end'>
+              <HStack justify='space-between'>
                 <Heading as='h2' size='lg'>
                   <Highlight
                     query='a'
@@ -168,35 +193,35 @@ const App = () => {
                       p: 1,
                       borderRadius: '0.375rem',
                       color: 'white',
-                      bg: 'green.300',
+                      bg: 'green.400',
                     }}
                   >
                     a
                   </Highlight>{' '}
                   = {slope}
                 </Heading>
-                <Button
-                  size='sm'
-                  onClick={() => {
-                    setSteps([])
-                    ref.current = null
-                    setSlope(decrement)
-                  }}
-                >
-                  <MinusIcon />
-                </Button>
-                <Button
-                  size='sm'
-                  onClick={() => {
-                    setSteps([])
-                    ref.current = null
-                    setSlope(increment)
-                  }}
-                >
-                  <AddIcon />
-                </Button>
+                <HStack>
+                  <Button
+                    onClick={() => {
+                      setSteps([])
+                      ref.current = null
+                      setSlope(decrement)
+                    }}
+                  >
+                    <MinusIcon />
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setSteps([])
+                      ref.current = null
+                      setSlope(increment)
+                    }}
+                  >
+                    <AddIcon />
+                  </Button>
+                </HStack>
               </HStack>
-              <HStack justify='end'>
+              <HStack justify='space-between'>
                 <Heading as='h2' size='lg'>
                   <Highlight
                     query='b'
@@ -204,42 +229,42 @@ const App = () => {
                       p: 1,
                       borderRadius: '0.375rem',
                       color: 'white',
-                      bg: 'red.300',
+                      bg: 'red.400',
                     }}
                   >
                     b
                   </Highlight>{' '}
                   = {intercept}
                 </Heading>
-                <Button
-                  size='sm'
-                  onClick={() => {
-                    setSteps([])
-                    ref.current = null
-                    setIntercept(decrement)
-                  }}
-                >
-                  <MinusIcon />
-                </Button>
-                <Button
-                  size='sm'
-                  onClick={() => {
-                    setSteps([])
-                    ref.current = null
-                    setIntercept(increment)
-                  }}
-                >
-                  <AddIcon />
-                </Button>
+                <HStack>
+                  <Button
+                    onClick={() => {
+                      setSteps([])
+                      ref.current = null
+                      setIntercept(decrement)
+                    }}
+                  >
+                    <MinusIcon />
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setSteps([])
+                      ref.current = null
+                      setIntercept(increment)
+                    }}
+                  >
+                    <AddIcon />
+                  </Button>
+                </HStack>
               </HStack>
             </Stack>
-            <Heading as='h2' size='lg' textAlign='center'>
+            <Heading as='h2' size='lg'>
               <Highlight
                 query='f(x)'
                 styles={{
                   p: 1,
                   borderRadius: '0.375rem',
-                  bg: 'orange.300',
+                  bg: 'orange.400',
                 }}
               >
                 f(x)
@@ -251,7 +276,7 @@ const App = () => {
                   p: 1,
                   borderRadius: '0.375rem',
                   color: 'white',
-                  bg: 'green.300',
+                  bg: 'green.400',
                 }}
               >
                 {slope.toString()}
@@ -262,7 +287,7 @@ const App = () => {
                 styles={{
                   p: 1,
                   borderRadius: '0.375rem',
-                  bg: 'gray.300',
+                  bg: 'gray.400',
                 }}
               >
                 x
@@ -274,7 +299,7 @@ const App = () => {
                   p: 1,
                   borderRadius: '0.375rem',
                   color: 'white',
-                  bg: 'red.300',
+                  bg: 'red.400',
                 }}
               >
                 {intercept.toString()}
@@ -287,9 +312,9 @@ const App = () => {
                 x: map(head, points) as Datum[],
                 y: map(last, points) as Datum[],
                 mode: 'markers',
-                name: 'Points',
+                name: 'Punkty',
                 marker: {
-                  color: '#63B3ED',
+                  color: '#4299E1',
                 },
               },
               {
@@ -298,83 +323,147 @@ const App = () => {
                 mode: 'lines',
                 name: `f(x) = ${slope} * x + ${intercept}`,
                 line: {
-                  color: '#F6AD55',
+                  color: '#ED8936',
                 },
               },
             ]}
-            layout={{ title: 'Training set' }}
+            layout={{
+              font: {
+                color: 'white',
+              },
+              plot_bgcolor: '#1a202c',
+              paper_bgcolor: '#1a202c',
+            }}
           />
         </HStack>
       </Stack>
       <HStack justify='center'>
         <Button
           isLoading={isLearning}
-          loadingText='Learning'
+          loadingText='Perceptron uczy się'
           spinnerPlacement='end'
           disabled={!!ref.current}
           onClick={handleLearn}
           mb={12}
         >
-          Learn
+          Rozpocznij naukę
         </Button>
       </HStack>
-      <LearningSteps steps={steps} />
       {ref.current && (
         <>
-          <Plot
-            data={[
-              {
-                x: sortedPoints[0].map((point) => point[0]),
-                y: sortedPoints[0].map((point) => point[1]),
-                mode: 'markers',
-              },
-              {
-                x: sortedPoints[1].map((point) => point[0]),
-                y: sortedPoints[1].map((point) => point[1]),
-                mode: 'markers',
-              },
-              {
-                x: xs,
-                y: ys,
-                mode: 'lines',
-              },
-            ]}
-            layout={{ title: 'Perceptron' }}
-          />
-          <Heading as='h2' size='lg'>
-            Points:
-            {isEmpty(sortedPoints.flat())
-              ? 0
-              : sortedPoints.slice(0, -1).flat().length}
-          </Heading>
-          <Button
-            size='sm'
-            onClick={() =>
-              setSortedPoints((draft) => {
-                last(draft[2]) === 'above' ? draft[0].pop() : draft[1].pop()
-                draft[2].pop()
-              })
-            }
-          >
-            -
-          </Button>
-          <Button
-            size='sm'
-            onClick={() =>
-              setSortedPoints((draft) => {
-                const point = getRandomPoint()
-                if (isPointAbove(point, ref.current)) {
-                  draft[0].push(point)
-                  draft[2].push('above')
-                } else {
-                  draft[1].push(point)
-                  draft[2].push('below')
-                }
-              })
-            }
-          >
-            +
-          </Button>
+          <Stack justifyContent='center' alignItems='center' mb={12}>
+            <Heading as='h2' size='lg' textAlign='center'>
+              Proces uczenia
+            </Heading>
+            <Text fontSize='xl' textAlign='center'>
+              Poniżej znajduje się krokowy proces uczenia perceptronu
+            </Text>
+          </Stack>
+          <LearningSteps steps={steps} />
+          <Stack justifyContent='center' alignItems='center' mt={12}>
+            <Heading as='h2' size='lg' textAlign='center'>
+              Test perceptronu
+            </Heading>
+            <Text fontSize='xl' textAlign='center'>
+              Przetestuj perceptron losowo wygenerowanymi punktami
+            </Text>
+          </Stack>
+          <HStack justify='center'>
+            <HStack justify='space-between' w={360}>
+              <Heading as='h2' size='lg'>
+                <Highlight
+                  query={`Punkty: ${
+                    isEmpty(sortedPoints.flat())
+                      ? 0
+                      : sortedPoints.slice(0, -1).flat().length
+                  }`}
+                  styles={{
+                    p: 1,
+                    borderRadius: '0.375rem',
+                    color: 'white',
+                    bg:
+                      last(sortedPoints[2]) === 'above'
+                        ? 'blue.400'
+                        : last(sortedPoints[2]) === 'below'
+                        ? 'green.400'
+                        : 'transparent',
+                  }}
+                >
+                  {`Punkty: ${
+                    isEmpty(sortedPoints.flat())
+                      ? 0
+                      : sortedPoints.slice(0, -1).flat().length
+                  }`}
+                </Highlight>
+              </Heading>
+              <HStack>
+                <Button
+                  onClick={() =>
+                    setSortedPoints((draft) => {
+                      last(draft[2]) === 'above'
+                        ? draft[0].pop()
+                        : draft[1].pop()
+                      draft[2].pop()
+                    })
+                  }
+                >
+                  <MinusIcon />
+                </Button>
+                <Button
+                  onClick={() =>
+                    setSortedPoints((draft) => {
+                      const point = getRandomPoint()
+                      if (isPointAbove(point, ref.current)) {
+                        draft[0].push(point)
+                        draft[2].push('above')
+                      } else {
+                        draft[1].push(point)
+                        draft[2].push('below')
+                      }
+                    })
+                  }
+                >
+                  <AddIcon />
+                </Button>
+              </HStack>
+            </HStack>
+            <Plot
+              data={[
+                {
+                  x: sortedPoints[0].map((point) => point[0]),
+                  y: sortedPoints[0].map((point) => point[1]),
+                  mode: 'markers',
+                  name: `${String.fromCharCode(0x3e)} f(x)`,
+                  marker: {
+                    color: '#4299E1',
+                  },
+                },
+                {
+                  x: sortedPoints[1].map((point) => point[0]),
+                  y: sortedPoints[1].map((point) => point[1]),
+                  mode: 'markers',
+                  name: `${String.fromCharCode(0x2264)} f(x)`,
+                  marker: { color: '#48BB78' },
+                },
+                {
+                  x: xs,
+                  y: ys,
+                  mode: 'lines',
+                  name: `f(x) = ${slope} * x + ${intercept}`,
+                  line: {
+                    color: '#ED8936',
+                  },
+                },
+              ]}
+              layout={{
+                paper_bgcolor: '#1a202c',
+                plot_bgcolor: '#1a202c',
+                font: {
+                  color: 'white',
+                },
+              }}
+            />
+          </HStack>
         </>
       )}
     </>

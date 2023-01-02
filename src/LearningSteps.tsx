@@ -16,9 +16,9 @@ interface ILearningStepsProps {
 }
 
 const LearningSteps = ({ steps }: ILearningStepsProps) => (
-  <TableContainer height={300} overflowY='scroll'>
-    <Table maxW={600} mx='auto'>
-      <Thead position='sticky' top={0} zIndex='docked' bg='white'>
+  <TableContainer maxW={1600} height={420} mx='auto' overflowY='scroll'>
+    <Table mx='auto'>
+      <Thead position='sticky' top={0} zIndex='docked' bg='#1a202c'>
         <Tr>
           {keys(steps[0]).map((header, index) => (
             <Th key={index} isNumeric>
