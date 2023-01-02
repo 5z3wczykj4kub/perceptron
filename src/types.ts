@@ -1,5 +1,9 @@
 export type TPoint = [number, number]
 
+export type TPlace = 'above' | 'below'
+
+export type TSortedPoint = [TPoint, TPoint, TPlace[]] | []
+
 export interface ILearningStep {
   epoch: number
   t: number

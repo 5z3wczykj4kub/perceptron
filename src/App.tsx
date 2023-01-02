@@ -25,7 +25,7 @@ import Plot from 'react-plotly.js'
 import { useImmer } from 'use-immer'
 import Perceptron from './classes/Perceptron'
 import LearningSteps from './LearningSteps'
-import { ILearningStep, TPoint } from './types'
+import { ILearningStep, TPlace, TPoint, TSortedPoint } from './types'
 
 const increment = (x: number) => x + 1
 const decrement = (x: number) => x - 1
@@ -54,6 +54,7 @@ const App = () => {
   const [intercept, setIntercept] = useImmer(0)
   const [steps, setSteps] = useImmer<ILearningStep[]>([])
   const [isLearning, setIsLearning] = useImmer(false)
+  const [sortedPoints, setSortedPoints] = useImmer<TSortedPoint[]>([[], [], []])
 
   const f = useCallback(
     (x: number) => slope * x + intercept,
@@ -107,10 +108,6 @@ const App = () => {
       ref.current = perceptron
     }, 0)
   }, [points, f, setSteps, setIsLearning])
-
-  const [sortedPoints, setSortedPoints] = useImmer<
-    [TPoint, TPoint, 'above' | 'below'][]
-  >([[], [], []])
 
   return (
     <>
@@ -168,6 +165,7 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
+                      setSortedPoints([[], [], []])
                       ref.current = null
                       setPoints((draft) => void draft.pop())
                     }}
@@ -177,6 +175,7 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
+                      setSortedPoints([[], [], []])
                       ref.current = null
                       setPoints(appendRandomPoint)
                     }}
@@ -204,6 +203,7 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
+                      setSortedPoints([[], [], []])
                       ref.current = null
                       setSlope(decrement)
                     }}
@@ -213,6 +213,7 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
+                      setSortedPoints([[], [], []])
                       ref.current = null
                       setSlope(increment)
                     }}
@@ -240,6 +241,7 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
+                      setSortedPoints([[], [], []])
                       ref.current = null
                       setIntercept(decrement)
                     }}
@@ -249,6 +251,7 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
+                      setSortedPoints([[], [], []])
                       ref.current = null
                       setIntercept(increment)
                     }}
@@ -411,14 +414,14 @@ const App = () => {
                 </Button>
                 <Button
                   onClick={() =>
-                    setSortedPoints((draft) => {
+                    setSortedPoints((draft: TSortedPoint[]) => {
                       const point = getRandomPoint()
                       if (isPointAbove(point, ref.current)) {
-                        draft[0].push(point)
-                        draft[2].push('above')
+                        ;(draft[0] as TPoint[]).push(point)
+                        ;(draft[2] as TPlace[]).push('above')
                       } else {
-                        draft[1].push(point)
-                        draft[2].push('below')
+                        ;(draft[1] as TPoint[]).push(point)
+                        ;(draft[2] as TPlace[]).push('below')
                       }
                     })
                   }
