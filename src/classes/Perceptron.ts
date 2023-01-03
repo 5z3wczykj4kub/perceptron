@@ -43,8 +43,8 @@ class Perceptron {
       this.weights[1] * inputs[1] +
       this.weights[2] * inputs[2]
     const y = +(s > 0)
-    const steps = {
-      epoch,
+    const step = {
+      Epoka: epoch,
       t: iteration,
       'x0(t)': inputs[2],
       'x1(t)': inputs[0],
@@ -63,7 +63,7 @@ class Perceptron {
         .forEach(
           (_, i) => (this.weights[i] += this.learningRate * inputs[i] * error)
         )
-    return steps
+    return step
   }
 }
 

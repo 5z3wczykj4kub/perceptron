@@ -4,8 +4,8 @@ export type TPlace = 'above' | 'below'
 
 export type TClassifiedPoints = [TPoint, TPoint, TPlace[]] | []
 
-export interface ILearningStep {
-  epoch: number
+export interface ITrainingResult {
+  Epoka: number
   t: number
   'x0(t)': number
   'x1(t)': number

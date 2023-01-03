@@ -1,4 +1,4 @@
-import { AddIcon, MinusIcon } from '@chakra-ui/icons'
+import { AddIcon, DownloadIcon, MinusIcon } from '@chakra-ui/icons'
 import {
   Box,
   Button,
@@ -17,18 +17,25 @@ import { useCallback, useMemo, useRef } from 'react'
 import Plot from 'react-plotly.js'
 import { useImmer } from 'use-immer'
 import Perceptron from './classes/Perceptron'
-import LearningSteps from './LearningSteps'
 import * as POINT from './modules/point'
-import { decrement, head, increment, last } from './modules/utils'
-import { ILearningStep, TClassifiedPoints, TPlace, TPoint } from './types'
+import {
+  decrement,
+  exportTrainingResultsToXLSX,
+  exportTrainingSetToXLSX,
+  head,
+  increment,
+  last,
+} from './modules/utils'
+import TrainingResults from './TrainingResults'
+import { ITrainingResult, TClassifiedPoints, TPlace, TPoint } from './types'
 
 const App = () => {
   const [points, setPoints] = useImmer<TPoint[]>(POINT.initial)
   const [slope, setSlope] = useImmer(1)
   const [intercept, setIntercept] = useImmer(0)
   const [weights, setWeights] = useImmer([-1, 1])
-  const [steps, setSteps] = useImmer<ILearningStep[]>([])
-  const [isLearning, setIsLearning] = useImmer(false)
+  const [trainingResults, setTrainingResults] = useImmer<ITrainingResult[]>([])
+  const [isTraining, setIsTraining] = useImmer(false)
   const [classifiedPoints, setClassifiedPoints] = useImmer<TClassifiedPoints[]>(
     [[], [], []]
   )
@@ -50,8 +57,8 @@ const App = () => {
 
   const perceptronRef = useRef<Perceptron | null>(null)
 
-  const learn = useCallback(() => {
-    setIsLearning(true)
+  const train = useCallback(() => {
+    setIsTraining(true)
     const xs = points.map(head)
     const ys = points.map(last)
     const desired = Array(points.length)
@@ -59,7 +66,7 @@ const App = () => {
       .map((_, i) => +(ys[i] > f(xs[i])))
     const perceptron = new Perceptron(2, weights)
     setTimeout(() => {
-      setSteps(
+      setTrainingResults(
         Array(100)
           .fill(null)
           .flatMap((_, epoch) =>
@@ -76,9 +83,9 @@ const App = () => {
           )
       )
       perceptronRef.current = perceptron
-      setIsLearning(false)
+      setIsTraining(false)
     }, 0)
-  }, [points, weights, f, setSteps, setIsLearning])
+  }, [points, weights, f, setTrainingResults, setIsTraining])
 
   return (
     <>
@@ -135,7 +142,7 @@ const App = () => {
                 <HStack>
                   <Button
                     onClick={() => {
-                      setSteps([])
+                      setTrainingResults([])
                       setClassifiedPoints([[], [], []])
                       perceptronRef.current = null
                       setPoints((draft) => void draft.pop())
@@ -145,7 +152,7 @@ const App = () => {
                   </Button>
                   <Button
                     onClick={() => {
-                      setSteps([])
+                      setTrainingResults([])
                       setClassifiedPoints([[], [], []])
                       perceptronRef.current = null
                       setPoints(POINT.append)
@@ -173,7 +180,7 @@ const App = () => {
                 <HStack>
                   <Button
                     onClick={() => {
-                      setSteps([])
+                      setTrainingResults([])
                       setClassifiedPoints([[], [], []])
                       perceptronRef.current = null
                       setSlope(decrement)
@@ -183,7 +190,7 @@ const App = () => {
                   </Button>
                   <Button
                     onClick={() => {
-                      setSteps([])
+                      setTrainingResults([])
                       setClassifiedPoints([[], [], []])
                       perceptronRef.current = null
                       setSlope(increment)
@@ -211,7 +218,7 @@ const App = () => {
                 <HStack>
                   <Button
                     onClick={() => {
-                      setSteps([])
+                      setTrainingResults([])
                       setClassifiedPoints([[], [], []])
                       perceptronRef.current = null
                       setIntercept(decrement)
@@ -221,7 +228,7 @@ const App = () => {
                   </Button>
                   <Button
                     onClick={() => {
-                      setSteps([])
+                      setTrainingResults([])
                       setClassifiedPoints([[], [], []])
                       perceptronRef.current = null
                       setIntercept(increment)
@@ -293,7 +300,7 @@ const App = () => {
                   setWeights(value)
                   return
                 }
-                setSteps([])
+                setTrainingResults([])
                 setClassifiedPoints([[], [], []])
                 perceptronRef.current = null
               }}
@@ -348,11 +355,24 @@ const App = () => {
       </Stack>
       <HStack justify='center'>
         <Button
-          isLoading={isLearning}
+          mb={8}
+          colorScheme='blue'
+          rightIcon={<DownloadIcon />}
+          aria-label='download training results'
+          onClick={() =>
+            exportTrainingSetToXLSX(points, slope, intercept, weights)
+          }
+        >
+          Pobierz
+        </Button>
+      </HStack>
+      <HStack justify='center'>
+        <Button
+          isLoading={isTraining}
           loadingText='Perceptron uczy się'
           spinnerPlacement='end'
           disabled={!!perceptronRef.current}
-          onClick={learn}
+          onClick={train}
           mb={12}
         >
           Rozpocznij naukę
@@ -367,8 +387,19 @@ const App = () => {
             <Text fontSize='xl' textAlign='center'>
               Poniżej znajduje się krokowy proces uczenia perceptronu
             </Text>
+            <HStack justify='center'>
+              <Button
+                mt={4}
+                colorScheme='blue'
+                rightIcon={<DownloadIcon />}
+                aria-label='download training results'
+                onClick={() => exportTrainingResultsToXLSX(trainingResults)}
+              >
+                Pobierz
+              </Button>
+            </HStack>
           </Stack>
-          <LearningSteps steps={steps} />
+          <TrainingResults steps={trainingResults} />
           <Stack justifyContent='center' alignItems='center' mt={12}>
             <Heading as='h2' size='lg' textAlign='center'>
               Test perceptronu

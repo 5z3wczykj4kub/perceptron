@@ -9,13 +9,13 @@ import {
 } from '@chakra-ui/react'
 import { keys, values } from 'lodash/fp'
 import { memo } from 'react'
-import { ILearningStep } from './types'
+import { ITrainingResult } from './types'
 
-interface ILearningStepsProps {
-  steps: ILearningStep[]
+interface ITrainingResultsProps {
+  steps: ITrainingResult[]
 }
 
-const LearningSteps = ({ steps }: ILearningStepsProps) => (
+const TrainingResults = ({ steps }: ITrainingResultsProps) => (
   <TableContainer maxW={1600} height={420} mx='auto' overflowY='scroll'>
     <Table mx='auto'>
       <Thead position='sticky' top={0} zIndex='docked' bg='#1a202c'>
@@ -42,4 +42,4 @@ const LearningSteps = ({ steps }: ILearningStepsProps) => (
   </TableContainer>
 )
 
-export default memo(LearningSteps)
+export default memo(TrainingResults)
