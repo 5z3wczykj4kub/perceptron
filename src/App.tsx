@@ -373,7 +373,7 @@ const App = () => {
           spinnerPlacement='end'
           disabled={!!perceptronRef.current}
           onClick={train}
-          mb={12}
+          mb={8}
         >
           Rozpocznij naukę
         </Button>

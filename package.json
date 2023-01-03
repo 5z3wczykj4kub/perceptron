@@ -1,4 +1,5 @@
 {
+  "homepage": "https://5z3wczykj4kub.github.io/perceptron/",
   "name": "perceptron",
   "private": true,
   "version": "0.0.0",
@@ -6,6 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "preview": "vite preview",
     "lint": "eslint --max-warnings=0 src"
   },
@@ -31,6 +34,7 @@
     "@vitejs/plugin-react": "^3.0.0",
     "eslint": "^8.30.0",
     "eslint-config-react-app": "^7.0.1",
+    "gh-pages": "^4.0.0",
     "typescript": "^4.9.3",
     "vite": "^4.0.0"
   }
