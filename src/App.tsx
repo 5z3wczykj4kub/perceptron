@@ -355,7 +355,7 @@ const App = () => {
       </Stack>
       <HStack justify='center'>
         <Button
-          mb={8}
+          mb={4}
           colorScheme='blue'
           rightIcon={<DownloadIcon />}
           aria-label='download training results'
@@ -373,7 +373,7 @@ const App = () => {
           spinnerPlacement='end'
           disabled={!!perceptronRef.current}
           onClick={train}
-          mb={8}
+          mb={12}
         >
           Rozpocznij naukę
         </Button>
