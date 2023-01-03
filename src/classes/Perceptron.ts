@@ -10,7 +10,7 @@ class Perceptron {
 
   constructor(
     inputsLength: number,
-    [minWeight, maxWeight] = [-1, 1],
+    [minWeight, maxWeight]: number[] = [-1, 1],
     learningRate = 0.5,
     bias = 1
   ) {
@@ -43,7 +43,7 @@ class Perceptron {
       this.weights[1] * inputs[1] +
       this.weights[2] * inputs[2]
     const y = +(s > 0)
-    const table = {
+    const steps = {
       epoch,
       t: iteration,
       'x0(t)': inputs[2],
@@ -63,7 +63,7 @@ class Perceptron {
         .forEach(
           (_, i) => (this.weights[i] += this.learningRate * inputs[i] * error)
         )
-    return table
+    return steps
   }
 }
 

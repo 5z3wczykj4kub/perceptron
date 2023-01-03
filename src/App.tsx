@@ -1,60 +1,37 @@
 import { AddIcon, MinusIcon } from '@chakra-ui/icons'
 import {
+  Box,
   Button,
   Heading,
   Highlight,
   HStack,
+  RangeSlider,
+  RangeSliderFilledTrack,
+  RangeSliderThumb,
+  RangeSliderTrack,
   Stack,
   Text,
 } from '@chakra-ui/react'
-import {
-  concat,
-  head,
-  isEmpty,
-  isEqual,
-  last,
-  map,
-  random,
-  range,
-  reduce,
-  some,
-} from 'lodash/fp'
-import { Datum } from 'plotly.js'
+import { concat, isEmpty, map, range, reduce } from 'lodash/fp'
 import { useCallback, useMemo, useRef } from 'react'
 import Plot from 'react-plotly.js'
 import { useImmer } from 'use-immer'
 import Perceptron from './classes/Perceptron'
 import LearningSteps from './LearningSteps'
-import { ILearningStep, TPlace, TPoint, TSortedPoint } from './types'
-
-const increment = (x: number) => x + 1
-const decrement = (x: number) => x - 1
-
-const getRandomPoint = (): TPoint => [random(-10, 10), random(-10, 10)]
-
-// FIXME: Maximum call stack size exceeded
-const appendRandomPoint = (points: TPoint[]): TPoint[] => {
-  const point: TPoint = getRandomPoint()
-  return some(isEqual(point), points)
-    ? appendRandomPoint(points)
-    : [...points, point]
-}
-
-const initialPoints = (inputsLength = 20) =>
-  Array(inputsLength - 1)
-    .fill(null)
-    .reduce(appendRandomPoint, [getRandomPoint()])
-
-const isPointAbove = ([x, y]: TPoint, perceptron: Perceptron) =>
-  Boolean(perceptron.activate([x, y, perceptron.bias]))
+import * as POINT from './modules/point'
+import { decrement, head, increment, last } from './modules/utils'
+import { ILearningStep, TClassifiedPoints, TPlace, TPoint } from './types'
 
 const App = () => {
-  const [points, setPoints] = useImmer<TPoint[]>(initialPoints)
+  const [points, setPoints] = useImmer<TPoint[]>(POINT.initial)
   const [slope, setSlope] = useImmer(1)
   const [intercept, setIntercept] = useImmer(0)
+  const [weights, setWeights] = useImmer([-1, 1])
   const [steps, setSteps] = useImmer<ILearningStep[]>([])
   const [isLearning, setIsLearning] = useImmer(false)
-  const [sortedPoints, setSortedPoints] = useImmer<TSortedPoint[]>([[], [], []])
+  const [classifiedPoints, setClassifiedPoints] = useImmer<TClassifiedPoints[]>(
+    [[], [], []]
+  )
 
   const f = useCallback(
     (x: number) => slope * x + intercept,
@@ -71,20 +48,16 @@ const App = () => {
     [f]
   )
 
-  const ref = useRef(null)
+  const perceptronRef = useRef<Perceptron | null>(null)
 
-  const handleLearn = useCallback(() => {
-    const xs = points.map((point) => point[0])
-    const ys = points.map((point) => point[1])
-
+  const learn = useCallback(() => {
+    setIsLearning(true)
+    const xs = points.map(head)
+    const ys = points.map(last)
     const desired = Array(points.length)
       .fill(null)
       .map((_, i) => +(ys[i] > f(xs[i])))
-
-    const perceptron = new Perceptron(2)
-
-    setIsLearning(true)
-
+    const perceptron = new Perceptron(2, weights)
     setTimeout(() => {
       setSteps(
         Array(100)
@@ -102,12 +75,10 @@ const App = () => {
               )
           )
       )
-
+      perceptronRef.current = perceptron
       setIsLearning(false)
-
-      ref.current = perceptron
     }, 0)
-  }, [points, f, setSteps, setIsLearning])
+  }, [points, weights, f, setSteps, setIsLearning])
 
   return (
     <>
@@ -165,8 +136,8 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
-                      setSortedPoints([[], [], []])
-                      ref.current = null
+                      setClassifiedPoints([[], [], []])
+                      perceptronRef.current = null
                       setPoints((draft) => void draft.pop())
                     }}
                   >
@@ -175,9 +146,9 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
-                      setSortedPoints([[], [], []])
-                      ref.current = null
-                      setPoints(appendRandomPoint)
+                      setClassifiedPoints([[], [], []])
+                      perceptronRef.current = null
+                      setPoints(POINT.append)
                     }}
                   >
                     <AddIcon />
@@ -203,8 +174,8 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
-                      setSortedPoints([[], [], []])
-                      ref.current = null
+                      setClassifiedPoints([[], [], []])
+                      perceptronRef.current = null
                       setSlope(decrement)
                     }}
                   >
@@ -213,8 +184,8 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
-                      setSortedPoints([[], [], []])
-                      ref.current = null
+                      setClassifiedPoints([[], [], []])
+                      perceptronRef.current = null
                       setSlope(increment)
                     }}
                   >
@@ -241,8 +212,8 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
-                      setSortedPoints([[], [], []])
-                      ref.current = null
+                      setClassifiedPoints([[], [], []])
+                      perceptronRef.current = null
                       setIntercept(decrement)
                     }}
                   >
@@ -251,8 +222,8 @@ const App = () => {
                   <Button
                     onClick={() => {
                       setSteps([])
-                      setSortedPoints([[], [], []])
-                      ref.current = null
+                      setClassifiedPoints([[], [], []])
+                      perceptronRef.current = null
                       setIntercept(increment)
                     }}
                   >
@@ -308,12 +279,47 @@ const App = () => {
                 {intercept.toString()}
               </Highlight>
             </Heading>
+            <Heading as='h2' size='md'>
+              Przedział wag:
+            </Heading>
+            <RangeSlider
+              aria-label={['min', 'max']}
+              min={-10}
+              max={10}
+              title='Przedział wag'
+              value={weights}
+              onChange={(value) => {
+                if (!perceptronRef.current) {
+                  setWeights(value)
+                  return
+                }
+                setSteps([])
+                setClassifiedPoints([[], [], []])
+                perceptronRef.current = null
+              }}
+            >
+              <RangeSliderTrack>
+                <RangeSliderFilledTrack />
+              </RangeSliderTrack>
+              <RangeSliderThumb index={0} />
+              <RangeSliderThumb index={1} />
+              <Box
+                position='absolute'
+                top={4}
+                display='flex'
+                justifyContent='space-between'
+                w='100%'
+              >
+                <Text>{weights[0]}</Text>
+                <Text>{weights[1]}</Text>
+              </Box>
+            </RangeSlider>
           </Stack>
           <Plot
             data={[
               {
-                x: map(head, points) as Datum[],
-                y: map(last, points) as Datum[],
+                x: map(head, points),
+                y: map(last, points),
                 mode: 'markers',
                 name: 'Punkty',
                 marker: {
@@ -324,7 +330,7 @@ const App = () => {
                 x: xs,
                 y: ys,
                 mode: 'lines',
-                name: `f(x) = ${slope} * x + ${intercept}`,
+                name: `f(x) = ${slope}x + ${intercept}`,
                 line: {
                   color: '#ED8936',
                 },
@@ -345,14 +351,14 @@ const App = () => {
           isLoading={isLearning}
           loadingText='Perceptron uczy się'
           spinnerPlacement='end'
-          disabled={!!ref.current}
-          onClick={handleLearn}
+          disabled={!!perceptronRef.current}
+          onClick={learn}
           mb={12}
         >
           Rozpocznij naukę
         </Button>
       </HStack>
-      {ref.current && (
+      {perceptronRef.current && (
         <>
           <Stack justifyContent='center' alignItems='center' mb={12}>
             <Heading as='h2' size='lg' textAlign='center'>
@@ -376,34 +382,34 @@ const App = () => {
               <Heading as='h2' size='lg'>
                 <Highlight
                   query={`Punkty: ${
-                    isEmpty(sortedPoints.flat())
+                    isEmpty(classifiedPoints.flat())
                       ? 0
-                      : sortedPoints.slice(0, -1).flat().length
+                      : classifiedPoints.slice(0, -1).flat().length
                   }`}
                   styles={{
                     p: 1,
                     borderRadius: '0.375rem',
                     color: 'white',
                     bg:
-                      last(sortedPoints[2]) === 'above'
+                      last(classifiedPoints[2] as TPlace[]) === 'above'
                         ? 'blue.400'
-                        : last(sortedPoints[2]) === 'below'
+                        : last(classifiedPoints[2] as TPlace[]) === 'below'
                         ? 'green.400'
                         : 'transparent',
                   }}
                 >
                   {`Punkty: ${
-                    isEmpty(sortedPoints.flat())
+                    isEmpty(classifiedPoints.flat())
                       ? 0
-                      : sortedPoints.slice(0, -1).flat().length
+                      : classifiedPoints.slice(0, -1).flat().length
                   }`}
                 </Highlight>
               </Heading>
               <HStack>
                 <Button
                   onClick={() =>
-                    setSortedPoints((draft) => {
-                      last(draft[2]) === 'above'
+                    setClassifiedPoints((draft) => {
+                      last(draft[2] as TPlace[]) === 'above'
                         ? draft[0].pop()
                         : draft[1].pop()
                       draft[2].pop()
@@ -414,9 +420,9 @@ const App = () => {
                 </Button>
                 <Button
                   onClick={() =>
-                    setSortedPoints((draft: TSortedPoint[]) => {
-                      const point = getRandomPoint()
-                      if (isPointAbove(point, ref.current)) {
+                    setClassifiedPoints((draft) => {
+                      const point = POINT.random()
+                      if (POINT.isAbove(point, perceptronRef.current!)) {
                         ;(draft[0] as TPoint[]).push(point)
                         ;(draft[2] as TPlace[]).push('above')
                       } else {
@@ -433,8 +439,8 @@ const App = () => {
             <Plot
               data={[
                 {
-                  x: sortedPoints[0].map((point) => point[0]),
-                  y: sortedPoints[0].map((point) => point[1]),
+                  x: (classifiedPoints[0] as TPoint[]).map(head),
+                  y: (classifiedPoints[0] as TPoint[]).map(last),
                   mode: 'markers',
                   name: `${String.fromCharCode(0x3e)} f(x)`,
                   marker: {
@@ -442,8 +448,8 @@ const App = () => {
                   },
                 },
                 {
-                  x: sortedPoints[1].map((point) => point[0]),
-                  y: sortedPoints[1].map((point) => point[1]),
+                  x: (classifiedPoints[1] as TPoint[]).map(head),
+                  y: (classifiedPoints[1] as TPoint[]).map(last),
                   mode: 'markers',
                   name: `${String.fromCharCode(0x2264)} f(x)`,
                   marker: { color: '#48BB78' },
@@ -452,7 +458,7 @@ const App = () => {
                   x: xs,
                   y: ys,
                   mode: 'lines',
-                  name: `f(x) = ${slope} * x + ${intercept}`,
+                  name: `f(x) = ${slope}x + ${intercept}`,
                   line: {
                     color: '#ED8936',
                   },
