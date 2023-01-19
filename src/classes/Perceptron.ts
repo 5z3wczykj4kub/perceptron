@@ -1,8 +1,8 @@
 import { random } from 'lodash'
-import { constant, map } from 'lodash/fp'
+import { map } from 'lodash/fp'
 import { TPoint } from '../types'
 
-// Oświadczenie o samodzielności napisania kodu - Jakub Szewczyk
+// Oświadczam o samodzielności napisania kodu - Jakub Szewczyk
 
 class Perceptron {
   inputsLength: number
@@ -18,7 +18,7 @@ class Perceptron {
   ) {
     this.inputsLength = inputsLength
     this.weights = map(
-      constant(random(minWeight, maxWeight, true)),
+      () => random(minWeight, maxWeight, true),
       Array(inputsLength + 1).fill(null)
     )
     this.learningRate = learningRate
