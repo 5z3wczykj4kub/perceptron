@@ -2,8 +2,6 @@ import { random } from 'lodash'
 import { map } from 'lodash/fp'
 import { TPoint } from '../types'
 
-// Oświadczam o samodzielności napisania kodu - Jakub Szewczyk
-
 class Perceptron {
   inputsLength: number
   learningRate: number
